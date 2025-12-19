@@ -92,18 +92,18 @@ public class WordleGame {
 
             // Validate input - print error messages on same line after prompt
             if (guess.length() != 5) {
-                System.out.println(" Your guess must be exactly 5 letters long.");
+                System.out.println("Your guess must be exactly 5 letters long.");
                 continue;
             }
 
             if (!guess.matches("[a-z]{5}")) {
-                System.out.println(" Your guess must only contain lowercase letters.");
+                System.out.println("Your guess must only contain lowercase letters.");
                 continue;
             }
 
             // Check word-in-list
             if (!isInWordList(guess, wordList)) {
-                System.out.println(" Word not in list. Please enter a valid word.");
+                System.out.println("Word not in list. Please enter a valid word.");
                 continue;
             }
 
