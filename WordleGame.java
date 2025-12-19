@@ -37,10 +37,9 @@ public class WordleGame {
         // 3. Create one Scanner for the entire life of the program
         Scanner scanner = new Scanner(System.in);
 
-        // If the secret word couldn't be loaded (invalid index), prompt and exit politely
+        // If the secret word couldn't be loaded (invalid index), print expected error and exit
         if (secretWord == null) {
-            System.out.println("Press Enter to exit...");
-            if (scanner.hasNextLine()) scanner.nextLine();
+            System.out.println("Invalid command-line argument. Please launch with a valid number.");
             return;
         }
 
