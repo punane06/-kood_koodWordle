@@ -15,7 +15,7 @@ public class WordleGame {
     private final String RESET = "\u001B[0m";
 
     public static void main(String[] args) {
-        // Since static is disabled, we create an object and run the game from there
+        // Since static is disabled, we create an object and run the game from  there
         WordleGame game = new WordleGame();
         game.start(args);
     }
