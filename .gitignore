@@ -1,0 +1,6 @@
+wordle-words.txt
+stats.csv
+# test files created during development
+test*.txt
+output.log
+*.class
