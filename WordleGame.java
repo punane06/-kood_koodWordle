@@ -118,12 +118,15 @@ public class WordleGame {
             }
 
             String feedback = getFeedback(guess, secretWord);
-            System.out.println(" Feedback: " + feedback);
+            System.out.println("Feedback: " + feedback);
 
-            // Track all letters that have been guessed (so they are removed from remaining letters)
+            // Track eliminated letters (letters guessed that are NOT in secret)
             String guessUpper = guess.toUpperCase();
+            String secretUpper = secretWord.toUpperCase();
             for (char c : guessUpper.toCharArray()) {
-                guessedLetters.add(c);
+                if (secretUpper.indexOf(c) == -1) {
+                    guessedLetters.add(c);
+                }
             }
 
             // Show remaining letters
