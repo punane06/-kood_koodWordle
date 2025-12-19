@@ -33,13 +33,16 @@ public class WordleGame {
 
         // 2. Read the word from the file wordle-words.txt
         String secretWord = loadSecretWord(args[0]);
-        if (secretWord == null) {
-            System.out.println("Invalid command-line argument. Please launch with a valid number.");
-            return;
-        }
 
         // 3. Create one Scanner for the entire life of the program
         Scanner scanner = new Scanner(System.in);
+
+        // If the secret word couldn't be loaded (invalid index), prompt and exit politely
+        if (secretWord == null) {
+            System.out.println("Press Enter to exit...");
+            if (scanner.hasNextLine()) scanner.nextLine();
+            return;
+        }
 
         // 4. Load word list for validation
         List<String> wordList = loadWordList();
@@ -74,40 +77,63 @@ public class WordleGame {
         final int MAX_ATTEMPTS = 6;
         boolean won = false;
         Set<Character> guessedLetters = new HashSet<>();
+        boolean eofEncountered = false;
 
         // Ask for username for statistics
-        System.out.print("Enter your username: ");
+        System.out.print("Enter your username:");
+        System.out.print(" Welcome to Wordle! Guess the 5-letter word.");
+        System.out.println();
         String username = scanner.hasNextLine() ? scanner.nextLine() : "Unknown";
-        System.out.println("Welcome to Wordle! Guess the 5-letter word.");
 
         while (attempts < MAX_ATTEMPTS && !won) {
             System.out.print("Enter your guess:  ");
 
-            if (!scanner.hasNextLine()) break;
+            if (!scanner.hasNextLine()) { eofEncountered = true; break; }
             String guess = scanner.nextLine().trim();
 
-            // Validate input
-            if (!isValidGuess(guess, wordList)) {
+            // Validate input - print error messages on same line after prompt
+            if (guess.length() != 5) {
+                System.out.println(" Your guess must be exactly 5 letters long.");
                 continue;
             }
 
+            if (!guess.matches("[a-z]{5}")) {
+                System.out.println(" Your guess must only contain lowercase letters.");
+                continue;
+            }
+
+            // Check word-in-list
+            if (!isInWordList(guess, wordList)) {
+                System.out.println(" Word not in list. Please enter a valid word.");
+                continue;
+            }
+
+            // At this point guess is valid
             attempts++;
+
+            // If correct guess - congratulate and end the game (do not print feedback)
+            if (guess.equalsIgnoreCase(secretWord)) {
+                System.out.println(" Congratulations! You've guessed the word correctly.");
+                won = true;
+                break;
+            }
+
             String feedback = getFeedback(guess, secretWord);
-            System.out.println("Feedback: " + feedback);
-            
-            // Track guessed letters
-            for (char c : guess.toUpperCase().toCharArray()) {
+            System.out.println(" Feedback: " + feedback);
+
+            // Track all letters that have been guessed (so they are removed from remaining letters)
+            String guessUpper = guess.toUpperCase();
+            for (char c : guessUpper.toCharArray()) {
                 guessedLetters.add(c);
             }
-            
+
             // Show remaining letters
             showRemainingLetters(guessedLetters);
             System.out.println("Attempts remaining: " + (MAX_ATTEMPTS - attempts));
+        }
 
-            if (guess.equalsIgnoreCase(secretWord)) {
-                won = true;
-                System.out.println("Congratulations! You've guessed the word correctly.");
-            }
+        if (eofEncountered) {
+            return;
         }
 
         if (!won) {
@@ -144,6 +170,14 @@ public class WordleGame {
         }
 
         System.out.println("Word not in list. Please enter a valid word.");
+        return false;
+    }
+
+    private boolean isInWordList(String guess, List<String> wordList) {
+        String guessLower = guess.toLowerCase();
+        for (String word : wordList) {
+            if (word.trim().equalsIgnoreCase(guessLower)) return true;
+        }
         return false;
     }
 
