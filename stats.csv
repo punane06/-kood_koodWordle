@@ -1,2 +1,12 @@
 TestUser,HELLO,2,win
 Player2,WORLD,6,loss
+testuser,HELLO,0,loss
+testuser2,HELLO,1,win
+testuser3,HELLO,1,win
+testuser4,HELLO,6,loss
+user,javac,1,win
+user,javac,0,loss
+user,javac,0,loss
+user,javac,0,loss
+user1,javac,1,win
+user1,javac,1,win
