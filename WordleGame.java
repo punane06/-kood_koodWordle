@@ -112,7 +112,7 @@ public class WordleGame {
 
             // If correct guess - congratulate and end the game (do not print feedback)
             if (guess.equalsIgnoreCase(secretWord)) {
-                System.out.println(" Congratulations! You've guessed the word correctly.");
+                System.out.println("Congratulations! You've guessed the word correctly.");
                 won = true;
                 break;
             }
