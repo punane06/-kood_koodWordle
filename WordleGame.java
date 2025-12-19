@@ -46,7 +46,7 @@ public class WordleGame {
         // 4. Load word list for validation
         List<String> wordList = loadWordList();
 
-        // 5. Run the game logic
+        // 5. Run the game logic 
         play(scanner, secretWord, wordList);
     }
 
