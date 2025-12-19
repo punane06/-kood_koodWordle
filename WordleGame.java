@@ -4,12 +4,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.HashSet;
 
 public class WordleGame {
 
     // ANSI color code
     private final String GREEN = "\u001B[32m";
     private final String YELLOW = "\u001B[33m";
+    private final String WHITE = "\u001B[37m";
     private final String RESET = "\u001B[0m";
 
     public static void main(String[] args) {
@@ -54,6 +57,7 @@ public class WordleGame {
         int attempts = 0;
         final int MAX_ATTEMPTS = 6;
         boolean won = false;
+        Set<Character> guessedLetters = new HashSet<>();
 
         // Ask for username for statistics
         System.out.println("Enter username:");
@@ -74,6 +78,14 @@ public class WordleGame {
             attempts++;
             String feedback = getFeedback(guess, secretWord);
             System.out.println(feedback);
+            
+            // Track guessed letters
+            for (char c : guess.toCharArray()) {
+                guessedLetters.add(c);
+            }
+            
+            // Show remaining letters
+            showRemainingLetters(guessedLetters, secretWord);
 
             if (guess.equals(secretWord)) {
                 won = true;
@@ -96,10 +108,9 @@ public class WordleGame {
     }
 
     private String getFeedback(String guess, String secret) {
-        // This is where the coloring logic happens
         // Green: guess[i] == secret[i]
         // Yellow: secret contains guess[i], but in the wrong place
-        // White: none at all
+        // White: not in secret at all
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 5; i++) {
             char c = guess.charAt(i);
@@ -108,10 +119,27 @@ public class WordleGame {
             } else if (secret.contains(String.valueOf(c))) {
                 sb.append(YELLOW).append(c).append(RESET);
             } else {
-                sb.append(c);
+                sb.append(WHITE).append(c).append(RESET);
             }
         }
         return sb.toString();
+    }
+    
+    private void showRemainingLetters(Set<Character> guessedLetters, String secretWord) {
+        StringBuilder remaining = new StringBuilder();
+        remaining.append("Remaining letters: ");
+        
+        for (char c = 'A'; c <= 'Z'; c++) {
+            if (!guessedLetters.contains(c)) {
+                // Check if this letter is in secret word - show in GREEN if yes
+                if (secretWord.contains(String.valueOf(c))) {
+                    remaining.append(GREEN).append(c).append(RESET);
+                } else {
+                    remaining.append(c);
+                }
+            }
+        }
+        System.out.println(remaining.toString());
     }
 
     private void saveStats(String user, String word, int att, String res) {
