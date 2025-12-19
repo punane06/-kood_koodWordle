@@ -31,15 +31,21 @@ public class WordleGame {
             return;
         }
 
-        // 2. Read the word from the file wordle-words.txt
-        String secretWord = loadSecretWord(args[0]);
-
-        // 3. Create one Scanner for the entire life of the program
+        // 2. Parse the argument to decide the error behavior (non-numeric -> invalid argument)
         Scanner scanner = new Scanner(System.in);
-
-        // If the secret word couldn't be loaded (invalid index), print expected error and exit
-        if (secretWord == null) {
+        int index;
+        try {
+            index = Integer.parseInt(args[0]);
+        } catch (NumberFormatException nfe) {
             System.out.println("Invalid command-line argument. Please launch with a valid number.");
+            return;
+        }
+
+        // 3. Read the secret word by index; if not found or file error, prompt to press Enter and exit
+        String secretWord = loadSecretWordByIndex(index);
+        if (secretWord == null) {
+            System.out.println("Press Enter to exit...");
+            if (scanner.hasNextLine()) scanner.nextLine();
             return;
         }
 
@@ -67,6 +73,18 @@ public class WordleGame {
             }
         } catch (IOException | NumberFormatException e) {
             // Be polite: a missing file or an incorrect index should not crash the program
+        }
+        return null;
+    }
+
+    private String loadSecretWordByIndex(int index) {
+        try {
+            List<String> words = Files.readAllLines(Paths.get("wordle-words.txt"));
+            if (index >= 0 && index < words.size()) {
+                return words.get(index).trim();
+            }
+        } catch (IOException e) {
+            // file missing or unreadable
         }
         return null;
     }
