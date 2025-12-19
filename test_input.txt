@@ -1,4 +1,0 @@
-TestUser
-HELIX
-HELLO
-yes
