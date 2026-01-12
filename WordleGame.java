@@ -119,16 +119,15 @@ public class WordleGame {
                 continue;
             }
 
-            // Check word-in-list
-            if (!isInWordList(guess, wordList)) {
-                System.out.println("Word not in list. Please enter a valid word.");
+            // Kontrolli pakkumise kehtivust (pikkus, tähed, sõnaloend)
+            if (!isValidGuess(guess, wordList)) {
                 continue;
             }
 
-            // At this point guess is valid
+            // Siinkohal on pakkumine kehtiv
             attempts++;
 
-            // If correct guess - congratulate and end the game (do not print feedback)
+            // Kui pakkumine on õige
             if (guess.equalsIgnoreCase(secretWord)) {
                 System.out.println("Congratulations! You've guessed the word correctly.");
                 won = true;
@@ -138,7 +137,7 @@ public class WordleGame {
             String feedback = getFeedback(guess, secretWord);
             System.out.println("Feedback: " + feedback);
 
-            // Track eliminated letters (letters guessed that are NOT in secret)
+            // Märgi elimineeritud tähed
             String guessUpper = guess.toUpperCase();
             String secretUpper = secretWord.toUpperCase();
             for (char c : guessUpper.toCharArray()) {
@@ -147,7 +146,7 @@ public class WordleGame {
                 }
             }
 
-            // Show remaining letters
+            // Näita allesjäänud tähti
             showRemainingLetters(guessedLetters);
             System.out.println("Attempts remaining: " + (MAX_ATTEMPTS - attempts));
         }
@@ -170,34 +169,26 @@ public class WordleGame {
         }
     }
 
+    /**
+     * Kontrollib, kas pakkumine on kehtiv (5 tähte, ainult väiketähed, olemas sõnaloendis).
+     * Kui ei ole, prindib sobiva veateate ja tagastab false.
+     */
     private boolean isValidGuess(String guess, List<String> wordList) {
         if (guess.length() != 5) {
             System.out.println("Your guess must be exactly 5 letters long.");
             return false;
         }
-
         if (!guess.matches("[a-z]{5}")) {
             System.out.println("Your guess must only contain lowercase letters.");
             return false;
         }
-
-        // Convert word list to lowercase for comparison
         String guessLower = guess.toLowerCase();
         for (String word : wordList) {
             if (word.trim().equalsIgnoreCase(guessLower)) {
                 return true;
             }
         }
-
         System.out.println("Word not in list. Please enter a valid word.");
-        return false;
-    }
-
-    private boolean isInWordList(String guess, List<String> wordList) {
-        String guessLower = guess.toLowerCase();
-        for (String word : wordList) {
-            if (word.trim().equalsIgnoreCase(guessLower)) return true;
-        }
         return false;
     }
 
