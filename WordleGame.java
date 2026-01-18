@@ -108,17 +108,6 @@ public class WordleGame {
             if (!scanner.hasNextLine()) { eofEncountered = true; break; }
             String guess = scanner.nextLine().trim();
 
-            // Validate input - print error messages on same line after prompt
-            if (guess.length() != 5) {
-                System.out.println("Your guess must be exactly 5 letters long.");
-                continue;
-            }
-
-            if (!guess.matches("[a-z]{5}")) {
-                System.out.println("Your guess must only contain lowercase letters.");
-                continue;
-            }
-
             // Kontrolli pakkumise kehtivust (pikkus, tähed, sõnaloend)
             if (!isValidGuess(guess, wordList)) {
                 continue;
