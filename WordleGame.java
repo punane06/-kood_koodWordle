@@ -64,19 +64,6 @@ public class WordleGame {
         }
     }
 
-    private String loadSecretWord(String indexArg) {
-        try {
-            List<String> words = Files.readAllLines(Paths.get("wordle-words.txt"));
-            int index = Integer.parseInt(indexArg);
-            if (index >= 0 && index < words.size()) {
-                return words.get(index).trim();
-            }
-        } catch (IOException | NumberFormatException e) {
-            // Be polite: a missing file or an incorrect index should not crash the program
-        }
-        return null;
-    }
-
     private String loadSecretWordByIndex(int index) {
         try {
             List<String> words = Files.readAllLines(Paths.get("wordle-words.txt"));
