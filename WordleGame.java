@@ -84,10 +84,9 @@ public class WordleGame {
         boolean eofEncountered = false;
 
         // Ask for username for statistics
-        System.out.print("Enter your username:");
-        System.out.print(" Welcome to Wordle! Guess the 5-letter word.");
-        System.out.println();
+        System.out.print("Enter your username and press Enter: ");
         String username = scanner.hasNextLine() ? scanner.nextLine() : "Unknown";
+        System.out.println("Welcome to Wordle! Guess the 5-letter word.");
 
         while (attempts < MAX_ATTEMPTS && !won) {
             System.out.print("Enter your guess:  ");
