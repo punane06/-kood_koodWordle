@@ -35,21 +35,22 @@ public class WordleGame {
             return;
         }
 
-        Integer wordIndex = parseWordIndex(args[0]);
-        if (wordIndex == null) {
-            return;
-        }
+        try (Scanner scanner = new Scanner(System.in)) {
+            Integer wordIndex = parseWordIndex(args[0]);
+            if (wordIndex == null) {
+                return;
+            }
 
-        Scanner scanner = new Scanner(System.in);
-        String secretWord = loadSecretWordByIndex(wordIndex);
-        
-        if (secretWord == null) {
-            waitForUserExit(scanner);
-            return;
-        }
+            String secretWord = loadSecretWordByIndex(wordIndex);
+            
+            if (secretWord == null) {
+                waitForUserExit(scanner);
+                return;
+            }
 
-        List<String> wordList = loadWordList();
-        play(scanner, secretWord, wordList);
+            List<String> wordList = loadWordList();
+            play(scanner, secretWord, wordList);
+        }
     }
 
     private boolean hasValidArguments(String[] args) {
