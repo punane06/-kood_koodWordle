@@ -347,7 +347,7 @@ public class WordleGame {
             String statLine = formatStatLine(username, word, attempts, result);
             writer.write(statLine);
         } catch (IOException e) {
-            // Handle gracefully
+            System.out.println("Warning: Could not save game statistics to '" + STATS_FILE + "'.");
         }
     }
 
