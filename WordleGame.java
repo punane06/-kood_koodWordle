@@ -41,14 +41,20 @@ public class WordleGame {
                 return;
             }
 
-            String secretWord = loadSecretWordByIndex(wordIndex);
-            
-            if (secretWord == null) {
+            List<String> wordList = loadWordList();
+            if (wordList.isEmpty()) {
+                System.out.println("Word list file '" + WORDS_FILE + "' is missing or empty. Cannot start the game.");
                 waitForUserExit(scanner);
                 return;
             }
 
-            List<String> wordList = loadWordList();
+            String secretWord = loadSecretWordByIndex(wordIndex);
+            if (secretWord == null) {
+                System.out.println("Could not load the secret word from the word list. Check the index and file content.");
+                waitForUserExit(scanner);
+                return;
+            }
+
             play(scanner, secretWord, wordList);
         }
     }
@@ -63,7 +69,7 @@ public class WordleGame {
 
     private Integer parseWordIndex(String argument) {
         try {
-            return Integer.parseInt(argument);
+            return Integer.valueOf(argument);
         } catch (NumberFormatException e) {
             System.out.println("Invalid command-line argument. Please launch with a valid number.");
             return null;
