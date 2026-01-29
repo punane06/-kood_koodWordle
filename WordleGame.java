@@ -140,7 +140,15 @@ public class WordleGame {
 
     private String getUserName(Scanner scanner) {
         System.out.print("Enter your username and press Enter: ");
-        return scanner.hasNextLine() ? scanner.nextLine() : DEFAULT_USERNAME;
+        if (scanner.hasNextLine()) {
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) {
+                return DEFAULT_USERNAME;
+            }
+            return input;
+        } else {
+            return DEFAULT_USERNAME;
+        }
     }
 
     private void printWelcomeMessage() {
