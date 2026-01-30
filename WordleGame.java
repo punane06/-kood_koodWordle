@@ -343,9 +343,16 @@ public class WordleGame {
     }
 
     private void saveStats(String username, String word, int attempts, String result) {
-        try (FileWriter writer = new FileWriter(STATS_FILE, true)) {
-            String statLine = formatStatLine(username, word, attempts, result);
-            writer.write(statLine);
+        try {
+            // Kontrolli, kas fail eksisteerib, kui ei, loo see
+            java.io.File statsFile = new java.io.File(STATS_FILE);
+            if (!statsFile.exists()) {
+                statsFile.createNewFile();
+            }
+            try (FileWriter writer = new FileWriter(statsFile, true)) {
+                String statLine = formatStatLine(username, word, attempts, result);
+                writer.write(statLine);
+            }
         } catch (IOException e) {
             System.out.println("Warning: Could not save game statistics to '" + STATS_FILE + "'.");
         }
