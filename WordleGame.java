@@ -115,11 +115,16 @@ public class WordleGame {
         
         while (gameState.canContinuePlaying()) {
             String guess = getUserGuess(scanner);
-            
+
             if (guess == null) {
                 return; // EOF encountered
             }
-            
+
+            if (guess.equalsIgnoreCase("exit")) {
+                System.out.println("Game exited by user.");
+                return;
+            }
+
             if (!isValidGuess(guess, wordList)) {
                 continue;
             }
