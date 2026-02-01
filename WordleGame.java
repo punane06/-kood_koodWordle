@@ -36,10 +36,19 @@ public class WordleGame {
         }
 
         try (Scanner scanner = new Scanner(System.in)) {
-            Integer wordIndex = parseWordIndex(args[0]);
-            if (wordIndex == null) {
-                return;
+            // Küsime sõna pikkust
+            System.out.print("Enter desired word length (e.g. 5): ");
+            int tempLength = WORD_LENGTH;
+            String lenInput = scanner.nextLine().trim();
+            if (!lenInput.isEmpty()) {
+                try {
+                    tempLength = Integer.parseInt(lenInput);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input, using default length " + WORD_LENGTH + ".");
+                    tempLength = WORD_LENGTH;
+                }
             }
+            final int chosenLength = tempLength;
 
             List<String> wordList = loadWordList();
             if (wordList.isEmpty()) {
@@ -48,14 +57,24 @@ public class WordleGame {
                 return;
             }
 
-            String secretWord = loadSecretWordByIndex(wordIndex);
-            if (secretWord == null) {
-                System.out.println("Could not load the secret word from the word list. Check the index and file content.");
+            // Filtreeri sõnaloend valitud pikkusega sõnadele
+            java.util.List<String> filteredList = new java.util.ArrayList<>();
+            for (String w : wordList) {
+                String trimmed = w.trim();
+                if (trimmed.length() == chosenLength) {
+                    filteredList.add(trimmed);
+                }
+            }
+            if (filteredList.isEmpty()) {
+                System.out.println("No words of length " + chosenLength + " found in the word list. Cannot start the game.");
                 waitForUserExit(scanner);
                 return;
             }
 
-            play(scanner, secretWord, wordList);
+            // Valime salajase sõna juhuslikult
+            String secretWord = filteredList.get((int)(Math.random() * filteredList.size()));
+
+            play(scanner, secretWord, filteredList, chosenLength);
         }
     }
 
@@ -67,14 +86,6 @@ public class WordleGame {
         return true;
     }
 
-    private Integer parseWordIndex(String argument) {
-        try {
-            return Integer.valueOf(argument);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid command-line argument. Please launch with a valid number.");
-            return null;
-        }
-    }
 
     private void waitForUserExit(Scanner scanner) {
         System.out.println("Press Enter to exit...");
@@ -91,28 +102,17 @@ public class WordleGame {
         }
     }
 
-    private String loadSecretWordByIndex(int index) {
-        try {
-            List<String> words = Files.readAllLines(Paths.get(WORDS_FILE));
-            if (isValidIndex(index, words.size())) {
-                return words.get(index).trim();
-            }
-        } catch (IOException e) {
-            // File missing or unreadable
-        }
-        return null;
-    }
 
     private boolean isValidIndex(int index, int listSize) {
         return index >= 0 && index < listSize;
     }
 
-    private void play(Scanner scanner, String secretWord, List<String> wordList) {
+    private void play(Scanner scanner, String secretWord, List<String> wordList, int wordLength) {
         String username = getUserName(scanner);
-        printWelcomeMessage();
-        
+        System.out.println("Welcome to Wordle! Guess the " + wordLength + "-letter word.");
+
         GameState gameState = new GameState();
-        
+
         while (gameState.canContinuePlaying()) {
             String guess = getUserGuess(scanner);
 
@@ -123,6 +123,11 @@ public class WordleGame {
             if (guess.equalsIgnoreCase("exit")) {
                 System.out.println("Game exited by user.");
                 return;
+            }
+
+            if (guess.length() != wordLength) {
+                System.out.println("Your guess must be exactly " + wordLength + " letters long.");
+                continue;
             }
 
             if (!isValidGuess(guess, wordList)) {
@@ -156,9 +161,6 @@ public class WordleGame {
         }
     }
 
-    private void printWelcomeMessage() {
-        System.out.println("Welcome to Wordle! Guess the " + WORD_LENGTH + "-letter word.");
-    }
 
     private String getUserGuess(Scanner scanner) {
         System.out.print("Enter your guess:  ");
