@@ -103,10 +103,6 @@ public class WordleGame {
     }
 
 
-    private boolean isValidIndex(int index, int listSize) {
-        return index >= 0 && index < listSize;
-    }
-
     private void play(Scanner scanner, String secretWord, List<String> wordList, int wordLength) {
         String username = getUserName(scanner);
         System.out.println("Welcome to Wordle! Guess the " + wordLength + "-letter word.");
