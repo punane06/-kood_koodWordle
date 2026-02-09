@@ -1,3 +1,5 @@
+
+// Proper imports at the top
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,7 +11,6 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class WordleGame {
-
     // Game constants
     private static final int WORD_LENGTH = 5;
     private static final int MAX_ATTEMPTS = 6;
@@ -18,7 +19,6 @@ public class WordleGame {
     private static final String DEFAULT_USERNAME = "Unknown";
     private static final String WIN_RESULT = "win";
     private static final String LOSS_RESULT = "loss";
-    
     // ANSI color codes
     private static final String GREEN = "\u001B[32m";
     private static final String YELLOW = "\u001B[33m";
@@ -31,9 +31,6 @@ public class WordleGame {
     }
 
     public void start(String[] args) {
-        if (!hasValidArguments(args)) {
-            return;
-        }
         try (Scanner scanner = new Scanner(System.in)) {
             List<String> wordList = loadWordList();
             if (wordList.isEmpty()) {
@@ -48,23 +45,23 @@ public class WordleGame {
                 if (len < minLength) minLength = len;
                 if (len > maxLength) maxLength = len;
             }
-            System.out.print("Enter desired word length (" + minLength + " - " + maxLength + "): ");
+            System.out.print("Choose your word length (" + minLength + " - " + maxLength + ") and press Enter: ");
             int tempLength = WORD_LENGTH;
             String lenInput = scanner.nextLine().trim();
             if (!lenInput.isEmpty()) {
                 try {
                     tempLength = Integer.parseInt(lenInput);
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid input, using default length " + WORD_LENGTH + ".");
+                    System.out.println("Oops, that's not a valid number. Using default length " + WORD_LENGTH + ".");
                     tempLength = WORD_LENGTH;
                 }
             }
             if (tempLength < minLength || tempLength > maxLength) {
-                System.out.println("Invalid length. Using default length " + WORD_LENGTH + ".");
+                System.out.println("That length is not available. Using default length " + WORD_LENGTH + ".");
                 tempLength = WORD_LENGTH;
             }
             final int chosenLength = tempLength;
-            java.util.List<String> filteredList = new java.util.ArrayList<>();
+            List<String> filteredList = new java.util.ArrayList<>();
             for (String w : wordList) {
                 String trimmed = w.trim();
                 if (trimmed.length() == chosenLength) {
@@ -72,21 +69,13 @@ public class WordleGame {
                 }
             }
             if (filteredList.isEmpty()) {
-                System.out.println("No words of length " + chosenLength + " found in the word list. Cannot start the game.");
+                System.out.println("Sorry, no words of length " + chosenLength + " found. Please try another length next time.");
                 waitForUserExit(scanner);
                 return;
             }
             String secretWord = filteredList.get((int)(Math.random() * filteredList.size()));
             play(scanner, secretWord, filteredList, chosenLength);
         }
-    }
-
-    private boolean hasValidArguments(String[] args) {
-        if (args.length == 0) {
-            System.out.println("Please provide a number as command line argument");
-            return false;
-        }
-        return true;
     }
 
     private void waitForUserExit(Scanner scanner) {
@@ -114,11 +103,11 @@ public class WordleGame {
                 return; // End of input encountered
             }
             if (guess.equalsIgnoreCase("exit")) {
-                System.out.println("Game exited by user.");
+                System.out.println("Game exited. Thanks for playing!");
                 return;
             }
             if (guess.length() != wordLength) {
-                System.out.println("Your guess must be exactly " + wordLength + " letters long.");
+                System.out.println("Your guess must be exactly " + wordLength + " letters. Try again!");
                 continue;
             }
             if (!isValidGuess(guess, wordList, wordLength)) {
@@ -136,7 +125,7 @@ public class WordleGame {
     }
 
     private String getUserName(Scanner scanner) {
-        System.out.print("Enter your username and press Enter: ");
+        System.out.print("Please enter your username: ");
         if (scanner.hasNextLine()) {
             String input = scanner.nextLine().trim();
             if (input.isEmpty()) {
@@ -149,7 +138,7 @@ public class WordleGame {
     }
 
     private String getUserGuess(Scanner scanner) {
-        System.out.print("Enter your guess:  ");
+        System.out.print("Type your guess and press Enter (or type 'exit' to quit): ");
         if (!scanner.hasNextLine()) {
             return null;
         }
@@ -161,7 +150,7 @@ public class WordleGame {
     }
 
     private void handleWin() {
-        System.out.println("Congratulations! You've guessed the word correctly.");
+        System.out.println("🎉 Congratulations! You guessed the word correctly!");
     }
 
     private void displayFeedback(String guess, String secretWord, GameState gameState) {
@@ -184,7 +173,7 @@ public class WordleGame {
 
     private void handleGameEnd(Scanner scanner, String username, String secretWord, GameState gameState) {
         if (!gameState.hasWon()) {
-            System.out.println("Game over. The correct word was: " + secretWord.toLowerCase());
+            System.out.println("Game over! The correct word was: '" + secretWord.toLowerCase() + "'.");
         }
         String result = gameState.hasWon() ? WIN_RESULT : LOSS_RESULT;
         saveStats(username, secretWord, gameState.getAttempts(), result);
@@ -192,50 +181,23 @@ public class WordleGame {
     }
 
     private void offerStatsDisplay(Scanner scanner, String username) {
-        System.out.print("Do you want to see your stats? (yes/no): ");
+        System.out.print("Would you like to see your stats? (yes/no): ");
         if (scanner.hasNextLine() && scanner.nextLine().equalsIgnoreCase("yes")) {
             showStats(username);
         }
     }
 
-    private class GameState {
-        private int attempts = 0;
-        private boolean won = false;
-        private final Set<Character> eliminatedLetters = new HashSet<>();
-        public void incrementAttempts() {
-            attempts++;
-        }
-        public int getAttempts() {
-            return attempts;
-        }
-        public int getRemainingAttempts() {
-            return MAX_ATTEMPTS - attempts;
-        }
-        public boolean canContinuePlaying() {
-            return attempts < MAX_ATTEMPTS && !won;
-        }
-        public void setWon(boolean won) {
-            this.won = won;
-        }
-        public boolean hasWon() {
-            return won;
-        }
-        public Set<Character> getEliminatedLetters() {
-            return eliminatedLetters;
-        }
-    }
-
     private boolean isValidGuess(String guess, List<String> wordList, int wordLength) {
         if (!hasCorrectLength(guess, wordLength)) {
-            System.out.println("Your guess must be exactly " + wordLength + " letters long.");
+            System.out.println("Your guess must be exactly " + wordLength + " letters. Try again!");
             return false;
         }
         if (!hasOnlyLowercaseLetters(guess, wordLength)) {
-            System.out.println("Your guess must only contain lowercase letters.");
+            System.out.println("Only lowercase English letters are allowed. Please try again.");
             return false;
         }
         if (!isInWordList(guess, wordList)) {
-            System.out.println("Word not in list. Please enter a valid word.");
+            System.out.println("That word isn't in the list. Try another word!");
             return false;
         }
         return true;
@@ -327,10 +289,10 @@ public class WordleGame {
             if (stats.hasGames()) {
                 displayStats(username, stats);
             } else {
-                System.out.println("No stats available yet.");
+                System.out.println("No stats available yet. Play more games to build your stats!");
             }
         } catch (IOException e) {
-            System.out.println("No stats available yet.");
+            System.out.println("No stats available yet. Play more games to build your stats!");
         }
     }
 
@@ -355,10 +317,37 @@ public class WordleGame {
     }
 
     private void displayStats(String username, UserStats stats) {
-        System.out.println("Stats for " + username + ":");
+        System.out.println("Player stats for '" + username + "':");
         System.out.println("Games played: " + stats.getGamesPlayed());
         System.out.println("Games won: " + stats.getGamesWon());
         System.out.printf(Locale.US, "Average attempts per game: %.1f\n", stats.getAverageAttempts());
+    }
+
+    private class GameState {
+        private int attempts = 0;
+        private boolean won = false;
+        private final Set<Character> eliminatedLetters = new HashSet<>();
+        public void incrementAttempts() {
+            attempts++;
+        }
+        public int getAttempts() {
+            return attempts;
+        }
+        public int getRemainingAttempts() {
+            return MAX_ATTEMPTS - attempts;
+        }
+        public boolean canContinuePlaying() {
+            return attempts < MAX_ATTEMPTS && !won;
+        }
+        public void setWon(boolean won) {
+            this.won = won;
+        }
+        public boolean hasWon() {
+            return won;
+        }
+        public Set<Character> getEliminatedLetters() {
+            return eliminatedLetters;
+        }
     }
 
     private class UserStats {
@@ -386,4 +375,3 @@ public class WordleGame {
         }
     }
 }
-    // ...existing code...
